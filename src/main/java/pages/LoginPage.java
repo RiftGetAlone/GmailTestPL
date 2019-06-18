@@ -60,7 +60,7 @@ public class LoginPage {
     }
 
     public void inputPassword() {
-        inputLoginButton.click();
+        inputPasswordButton.click();
         wait.withMessage("Неверный пароль")
                 .until(ExpectedConditions.urlContains("https://myaccount.google.com"));
     }
