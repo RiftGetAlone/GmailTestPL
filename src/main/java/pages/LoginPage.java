@@ -1,24 +1,19 @@
 package pages;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import javax.xml.bind.SchemaOutputResolver;
-import java.util.concurrent.TimeUnit;
-
-import static org.openqa.selenium.Keys.ENTER;
-
-
 public class LoginPage {
 
     private WebDriver driver;
     private WebDriverWait wait;
     private static final String pageURL = "https://accounts.google.com";
+    private static final Logger logger = Logger.getLogger(LoginPage.class);
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
@@ -63,5 +58,6 @@ public class LoginPage {
         inputPasswordButton.click();
         wait.withMessage("Неверный пароль")
                 .until(ExpectedConditions.urlContains("https://myaccount.google.com"));
+        logger.info("Вход в аккаунт выполнен");
     }
 }

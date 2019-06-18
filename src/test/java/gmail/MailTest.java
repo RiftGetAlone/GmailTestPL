@@ -9,16 +9,16 @@ import pages.MailPage;
 public class MailTest extends WebDriverSettings {
 
     @Test
-    public void SendLetter(){
+    public void SendLetter() throws InterruptedException{
         LoginPage loginPage = PageFactory.initElements(driver, LoginPage.class);
         MailPage mailPage = PageFactory.initElements(driver, MailPage.class);
 
-        String emailSender = "emailSender";
-        String passwordSender = "passwordSender";
+        String emailSender = "";
+        String passwordSender = "";
 
-        String emailRecipient = "emailRecipient";
-        String letterSubject = "letterSubject";
-        String letterText = "letterText";
+        String emailRecipient = "";
+        String letterSubject = "";
+        String letterText = "";
 
         loginPage.open();
         loginPage.writeLogin(emailSender);
@@ -32,5 +32,8 @@ public class MailTest extends WebDriverSettings {
         mailPage.writeLetterSubject(letterSubject);
         mailPage.writeLetterText(letterText);
         mailPage.sendLetter();
+        //mailPage.verifyLastSentLetter(emailRecipient, letterSubject, letterText);
+
+        Thread.sleep(20000);
     }
 }

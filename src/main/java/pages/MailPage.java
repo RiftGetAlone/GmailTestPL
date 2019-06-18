@@ -1,5 +1,6 @@
 package pages;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -11,10 +12,11 @@ public class MailPage {
     private WebDriver driver;
     private WebDriverWait wait;
     private static final String pageURL = "https://gmail.com";
+    private static final Logger logger = Logger.getLogger(MailPage.class);
 
     public MailPage(WebDriver driver) {
         this.driver = driver;
-        wait = new WebDriverWait(driver, 10);
+        wait = new WebDriverWait(driver, 20);
     }
 
     @FindBy(xpath = "//div[@role='button' and @gh='cm']")
@@ -32,8 +34,13 @@ public class MailPage {
     @FindBy(xpath = "//div[@role='button' and contains(@data-tooltip,'Ctrl')]")
     private WebElement sendLetterButton;
 
+    //@FindBy(xpath = "//span[@class='nU ']/a[contains(@href,'sent')]")
+    //private WebElement sentButton;
+
     private By newLetterButtonLocator = By.xpath("//div[@role='button' and @gh='cm']");
-    private By newLetterWindowLocator = By.xpath("//div[@role='dialog']");
+    private By newLetterWindowLocator = By.xpath("//textarea[@name='to']");
+    private By letterSentLocator = By.xpath("//span[@class='aT']");
+    private By sentLocator = By.xpath("//span[@class='nU ']/a[contains(@href,'sent') and @tabindex='0']");
 
     public void open() {
         driver.get(pageURL);
@@ -45,7 +52,8 @@ public class MailPage {
         createNewLetterButton.click();
         wait.withMessage("Не удалось создать письмо")
                 .until(ExpectedConditions.visibilityOfElementLocated(newLetterWindowLocator));
-    }
+        logger.info("Новое письмо открыто");
+}
 
     public void writeRecipientEmail(String recipientEmail) {
         recipientEmailField.sendKeys(recipientEmail);
@@ -61,5 +69,15 @@ public class MailPage {
 
     public void sendLetter() {
         sendLetterButton.click();
+        wait.withMessage("Не удалось отправить письмо")
+                .until(ExpectedConditions.visibilityOfElementLocated(letterSentLocator));
+        logger.info("Письмо отправлено");
+    }
+
+    public void verifyLastSentLetter(String recipientEmail, String letterSubject, String letterText) {
+        //sentButton.click();
+        wait.withMessage("Не удалось перейти в \"Отправленные\"")
+                .until(ExpectedConditions.visibilityOfElementLocated(sentLocator));
+        logger.info("Письмо добавленно в отправленные");
     }
 }

@@ -11,7 +11,7 @@ public class WebDriverSettings {
 
     @Before
     public void initWebDriver() {
-        driver = WebDriverManager.initFirefoxDriver();
+        driver = WebDriverManager.initChromeDriver();
     }
 
     @After
