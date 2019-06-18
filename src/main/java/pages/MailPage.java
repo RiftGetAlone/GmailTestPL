@@ -10,4 +10,23 @@ public class MailPage {
         this.driver = driver;
     }
 
+    public void createNewMail() {
+
+    }
+
+    public void writeRecipientEmail(String recipientEmail) {
+
+    }
+
+    public void writeLetterTitle(String letterTitle) {
+
+    }
+
+    public void writeLetterText(String letterText) {
+
+    }
+
+    public void sendLetter() {
+        
+    }
 }
