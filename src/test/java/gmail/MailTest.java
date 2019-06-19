@@ -33,5 +33,6 @@ public class MailTest extends WebDriverSettings {
         mailPage.writeLetterText(letterText);
         mailPage.sendLetter();
         mailPage.verifyLastSentLetter(emailRecipient, letterSubject, letterText);
+        mailPage.logout();
     }
 }

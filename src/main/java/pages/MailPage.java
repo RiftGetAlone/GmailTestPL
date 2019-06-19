@@ -9,10 +9,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class MailPage {
-    private WebDriver driver;
-    private WebDriverWait wait;
     private static final String pageURL = "https://gmail.com";
     private static final Logger logger = Logger.getLogger(MailPage.class);
+    private WebDriver driver;
+    private WebDriverWait wait;
+    private String currentLastSentLetterId;
 
     @FindBy(xpath = "//div[@role='button' and @gh='cm']")
     private WebElement createNewLetterButton;
@@ -38,12 +39,19 @@ public class MailPage {
     @FindBy(xpath = "//div[@gh='tl']//tbody/tr[@class='zA yO'][1]")
     private WebElement lastSentLetter;
 
+    @FindBy(xpath = "//a[contains(@href, 'SignOut')]")
+    private WebElement userProfileButton;
+
+    @FindBy(xpath = "//a[contains(@href, 'Logout')]")
+    private WebElement logoutButton;
+
     private By newLetterButtonLocator = By.xpath("//div[@role='button' and @gh='cm']");
     private By newLetterWindowLocator = By.xpath("//textarea[@name='to']");
     private By letterSentLocator = By.xpath("//span[@class='aT']");
     private By sentOpenedLocator = By.xpath("//div[@class='BltHke nH oy8Mbf' and @style='' and @role='main']");
     private By inboxOpenedLocator = By.xpath("//div[@class='BltHke nH oy8Mbf aE3' and @style='' and @role='main']");
-    private String currentLastSentLetterId;
+    private By userProfileOpenedLocator = By.xpath("//a[contains(@href, 'Logout')]");
+    private By passwordField = By.xpath("//input[@type='password']");
 
     public MailPage(WebDriver driver) {
         this.driver = driver;
@@ -118,5 +126,16 @@ public class MailPage {
         } else {
             logger.error("Текст отправленного письма сохранен некорректно");
         }
+        currentLastSentLetterId = lastSentLetter.getAttribute("id");
+    }
+
+    public void logout() {
+        userProfileButton.click();
+        wait.withMessage("Не удалось раскрыть окно профиля")
+                .until(ExpectedConditions.visibilityOfElementLocated(userProfileOpenedLocator));
+        logoutButton.click();
+        wait.withMessage("Не удалось выйти из аккаунта")
+                .until(ExpectedConditions.visibilityOfElementLocated(passwordField));
+        logger.info("Выход из аккаунта выполнен успешно");
     }
 }
