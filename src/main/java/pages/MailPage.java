@@ -14,11 +14,6 @@ public class MailPage {
     private static final String pageURL = "https://gmail.com";
     private static final Logger logger = Logger.getLogger(MailPage.class);
 
-    public MailPage(WebDriver driver) {
-        this.driver = driver;
-        wait = new WebDriverWait(driver, 20);
-    }
-
     @FindBy(xpath = "//div[@role='button' and @gh='cm']")
     private WebElement createNewLetterButton;
 
@@ -31,21 +26,41 @@ public class MailPage {
     @FindBy(xpath = "//div[@role='textbox']")
     private WebElement textLetterField;
 
-    @FindBy(xpath = "//div[@role='button' and contains(@data-tooltip,'Ctrl')]")
+    @FindBy(xpath = "//div[@role='button' and contains(@data-tooltip,'Enter')]")
     private WebElement sendLetterButton;
 
-    //@FindBy(xpath = "//span[@class='nU ']/a[contains(@href,'sent')]")
-    //private WebElement sentButton;
+    @FindBy(xpath = "//a[contains(@href,'sent')]")
+    private WebElement sentButton;
+
+    @FindBy(xpath = "//a[contains(@href,'inbox') and @tabindex='-1' and @draggable='false']")
+    private WebElement inboxButton;
+
+    @FindBy(xpath = "//div[@gh='tl']//tbody/tr[@class='zA yO'][1]")
+    private WebElement lastSentLetter;
 
     private By newLetterButtonLocator = By.xpath("//div[@role='button' and @gh='cm']");
     private By newLetterWindowLocator = By.xpath("//textarea[@name='to']");
     private By letterSentLocator = By.xpath("//span[@class='aT']");
-    private By sentLocator = By.xpath("//span[@class='nU ']/a[contains(@href,'sent') and @tabindex='0']");
+    private By sentOpenedLocator = By.xpath("//div[@class='BltHke nH oy8Mbf' and @style='' and @role='main']");
+    private By inboxOpenedLocator = By.xpath("//div[@class='BltHke nH oy8Mbf aE3' and @style='' and @role='main']");
+    private String currentLastSentLetterId;
+
+    public MailPage(WebDriver driver) {
+        this.driver = driver;
+        wait = new WebDriverWait(driver, 20);
+    }
 
     public void open() {
         driver.get(pageURL);
         wait.withMessage("Страница не загрузилась")
                 .until(ExpectedConditions.visibilityOfElementLocated(newLetterButtonLocator));
+        sentButton.click();
+        wait.withMessage("Не удалось перейти в \"Отправленные\"")
+                .until(ExpectedConditions.visibilityOfElementLocated(sentOpenedLocator));
+        currentLastSentLetterId = lastSentLetter.getAttribute("id");
+        inboxButton.click();
+        wait.withMessage("Не удалось перейти во \"Входящие\"")
+                .until(ExpectedConditions.visibilityOfElementLocated(inboxOpenedLocator));
     }
 
     public void createNewLetter() {
@@ -74,10 +89,34 @@ public class MailPage {
         logger.info("Письмо отправлено");
     }
 
-    public void verifyLastSentLetter(String recipientEmail, String letterSubject, String letterText) {
-        //sentButton.click();
+    public void verifyLastSentLetter(String recipientEmail, String letterSubject, String letterText)
+            throws InterruptedException {
+        sentButton.click();
         wait.withMessage("Не удалось перейти в \"Отправленные\"")
-                .until(ExpectedConditions.visibilityOfElementLocated(sentLocator));
+                .until(ExpectedConditions.visibilityOfElementLocated(sentOpenedLocator));
+        wait.withMessage("Письмо не добавлено в \"Отправленные\"")
+                .until(ExpectedConditions.not(ExpectedConditions.attributeToBe(lastSentLetter, "id",
+                        currentLastSentLetterId)));
         logger.info("Письмо добавленно в отправленные");
+        Thread.sleep(2000);
+        String lastSentLetterRecipientEmail = driver.findElement(By.xpath(".//div[@class='yW']/span[@email]"))
+                .getAttribute("email");
+        String lastSentLetterSubject = lastSentLetter.findElement(By.xpath(".//span[@class='bog']/span")).getText();
+        String lastSentLetterText = lastSentLetter.findElement(By.xpath(".//span[@class='y2']")).getText().substring(4);
+        if(lastSentLetterRecipientEmail.equals(recipientEmail)) {
+            logger.info("Адресат отправленного письма сохранен корректно");
+        } else {
+            logger.error("Адресат отправленного письма сохранен некорректно");
+        }
+        if(lastSentLetterSubject.equals(letterSubject)  ) {
+            logger.info("Тема отправленного письма сохранена корректно");
+        } else {
+            logger.error("Тема отправленного письма сохранена некорректно");
+        }
+        if(letterText.contains(lastSentLetterText)) {
+            logger.info("Текст отправленного письма сохранен корректно");
+        } else {
+            logger.error("Текст отправленного письма сохранен некорректно");
+        }
     }
 }

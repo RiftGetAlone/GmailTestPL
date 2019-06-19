@@ -9,7 +9,7 @@ import pages.MailPage;
 public class MailTest extends WebDriverSettings {
 
     @Test
-    public void SendLetter() throws InterruptedException{
+    public void SendLetter() throws InterruptedException {
         LoginPage loginPage = PageFactory.initElements(driver, LoginPage.class);
         MailPage mailPage = PageFactory.initElements(driver, MailPage.class);
 
@@ -32,8 +32,6 @@ public class MailTest extends WebDriverSettings {
         mailPage.writeLetterSubject(letterSubject);
         mailPage.writeLetterText(letterText);
         mailPage.sendLetter();
-        //mailPage.verifyLastSentLetter(emailRecipient, letterSubject, letterText);
-
-        Thread.sleep(20000);
+        mailPage.verifyLastSentLetter(emailRecipient, letterSubject, letterText);
     }
 }
