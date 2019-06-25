@@ -13,7 +13,7 @@ public class MailTest extends WebDriverSettings {
 
     @Test
     public void logIn() {
-        driver.manage().window().maximize();
+
         LoginPage loginPage = PageFactory.initElements(driver, LoginPage.class);
         String emailSender = "";
         String passwordSender = "";
